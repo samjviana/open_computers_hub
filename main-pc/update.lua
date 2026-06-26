@@ -6,32 +6,32 @@ local ROOT_DIR = "/home"
 local MANIFEST_PATH = "/home/.manifest.lua"
 
 local function getParentDir(path)
-    return path:match("^(.*)/[^/]+$")
+  return path:match("^(.*)/[^/]+$")
 end
 
 local function ensureDir(path)
-    local current = ""
+  local current = ""
 
-    for part in path:gmatch("[^/]+") do
-        current = current .. "/" .. part
+  for part in path:gmatch("[^/]+") do
+    current = current .. "/" .. part
 
-        if not fs.exists(current) then
-            fs.makeDirectory(current)
-        end
+    if not fs.exists(current) then
+      fs.makeDirectory(current)
     end
+  end
 end
 
 local function downloadFile(file)
-    local url = BASE_URL .. "/" .. file
-    local target = ROOT_DIR .. "/" .. file
-    local parentDir = getParentDir(target)
+  local url = BASE_URL .. "/" .. file
+  local target = ROOT_DIR .. "/" .. file
+  local parentDir = getParentDir(target)
 
-    if parentDir then
-        ensureDir(parentDir)
-    end
+  if parentDir then
+    ensureDir(parentDir)
+  end
 
-    print("Downloading " .. file)
-    shell.execute("wget", nil, "-f", url, target)
+  print("Downloading " .. file)
+  shell.execute("wget", nil, "-f", url, target)
 end
 
 print("Downloading manifest")
@@ -40,7 +40,7 @@ shell.execute("wget", nil, "-f", BASE_URL .. "/manifest.lua", MANIFEST_PATH)
 local files = dofile(MANIFEST_PATH)
 
 for _, file in ipairs(files) do
-    downloadFile(file)
+  downloadFile(file)
 end
 
 fs.remove(MANIFEST_PATH)

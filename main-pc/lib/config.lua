@@ -4,11 +4,17 @@ local config = {
   REDSTONE_IO = "8ce8192e-61c3-4da7-b4cf-3f6f0e47e27e",
   RS_MAIN = "015f8bd9-e59e-41e5-9673-044f5cd34150",
   RS_AUX = "e2ebf32c-a6b3-47c2-9a54-bc3d3975b4e5",
+  RS_POTION = "7a416d3a-ec9c-41e0-94b3-dd13809b0449",
+
+  POTION_TRANSPOSER = "2a954d90-9c67-4d15-b85d-46685917cb62",
 
   STOP_SIDE = sides.south,
   TRASH_SIDE = sides.south,
   CHEST_SIDE = sides.north,
   WHEAT_CHEST_SIDE = sides.south,
+  POTION_BREWER_SIDE = sides.west,
+  POTION_CHEST_SIDE_T = sides.north,
+  POTION_CHEST_SIDE_RS = sides.west,
 
   MAX_QUANTITY = 20000,
   DISPLAY_RATIO = 0.4,
@@ -20,8 +26,9 @@ local config = {
   DISPLAY_INTERVAL = 1.00,
   STORAGE_INTERVAL = 5.00,
   WHEAT_RETRY_INTERVAL = 5.00,
+  HASTE_POTION_INTERVAL = 1.00,
 
-  -- Segurança: mesmo se nenhum job estiver perto, acorda ocasionalmente.
+  -- Safety: even if no job is close, wake up occasionally.
   MAX_EVENT_WAIT = 1.00,
   MIN_EVENT_WAIT = 0.01,
 

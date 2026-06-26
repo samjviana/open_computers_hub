@@ -5,6 +5,7 @@ local config = require("config")
 local components = require("components")
 local display = require("ui.storage_display")
 local cows = require("tasks.cows")
+local haste_potion = require("tanks.haste_potion")
 local repair = require("tasks.repair")
 local overflow = require("tasks.overflow")
 
@@ -17,6 +18,7 @@ local displayCache = {}
 local lastStorage = -config.STORAGE_INTERVAL
 local lastItemScan = -config.ITEM_SCAN_INTERVAL
 local lastDisplay = -config.DISPLAY_INTERVAL
+local lastHastePotion = -config.HASTE_POTION_INTERVAL
 
 local function isStopPressed()
   return ctx.redstone.getInput(config.STOP_SIDE) > 0
@@ -95,6 +97,11 @@ while not isStopPressed() do
   if due(now, lastDisplay, config.DISPLAY_INTERVAL) then
     display.renderItems(ctx, displayCache)
     lastDisplay = now
+  end
+
+  if due(now, lastHastePotion, config.HASTE_POTION_INTERVAL) then
+    haste_potion.refill(ctx)
+    lastHastePotion = now
   end
 
   local name, address, side, oldValue, newValue = event.pull(nextWait(computer.uptime()))
