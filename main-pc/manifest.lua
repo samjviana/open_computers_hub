@@ -8,7 +8,7 @@ return {
   "lib/tasks/cows.lua",
   "lib/tasks/repair.lua",
   "lib/tasks/overflow.lua",
-  "lib/tanks/haste_potion.lua",
+  "lib/tasks/haste_potion.lua",
 
   "lib/ui/storage_display.lua"
 }
