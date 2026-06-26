@@ -3,7 +3,7 @@ local fs = require("filesystem")
 
 local BASE_URL = "https://raw.githubusercontent.com/samjviana/open_computers_hub/refs/heads/main/main-pc"
 local ROOT_DIR = "/home"
-local MANIFEST_PATH = "/home/.manifest.lua"
+local MANIFEST_PATH = "/home/manifest.lua"
 
 local function getParentDir(path)
   return path:match("^(.*)/[^/]+$")
