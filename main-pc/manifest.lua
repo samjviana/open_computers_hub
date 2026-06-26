@@ -1,5 +1,7 @@
 return {
   "main.lua",
+  "manifest.lua",
+  "update.lua",
 
   "lib/config.lua",
   "lib/components.lua",

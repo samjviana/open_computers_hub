@@ -5,7 +5,7 @@ local config = require("config")
 local components = require("components")
 local display = require("ui.storage_display")
 local cows = require("tasks.cows")
-local haste_potion = require("tanks.haste_potion")
+local haste_potion = require("tasks.haste_potion")
 local repair = require("tasks.repair")
 local overflow = require("tasks.overflow")
 
