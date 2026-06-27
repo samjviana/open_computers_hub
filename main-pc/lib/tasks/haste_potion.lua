@@ -13,7 +13,7 @@ local function needItem(ctx, item_slot)
   local rs_potion = ctx.rsPotion
   if not rs_potion then return false end
 
-  local potionChestSide = ctx.config.POTION_CHEST_SIDE
+  local potionChestSide = ctx.config.POTION_CHEST_SIDE_RS
 
   local count = rs_potion.getSlotStackSize(potionChestSide, item_slot) or 0
   if count > 0 then return false end
@@ -23,7 +23,7 @@ local function findItem(ctx, item_name)
   local rs_potion = ctx.rsPotion
   if not rs_potion then return nil end
 
-  local potionChestSide = ctx.config.POTION_CHEST_SIDE
+  local potionChestSide = ctx.config.POTION_CHEST_SIDE_RS
 
   local size = rs_potion.getInventorySize(potionChestSide) or 0
   for slot = 1, size do
@@ -44,15 +44,16 @@ local function moveItem(ctx, itemSlot, itemName)
   if not rs_potion then return false end
 
   local potionBrewerSide = ctx.config.POTION_BREWER_SIDE
-  local potionChestSide = ctx.config.POTION_CHEST_SIDE
+  local potionChestSideRs = ctx.config.POTION_CHEST_SIDE_RS
+  local potionChestSideT = ctx.config.POTION_CHEST_SIDE_T
 
-  local moved = rs_potion.extractItem({name = itemName}, 1, potionChestSide)
+  local moved = rs_potion.extractItem({name = itemName}, 1, potionChestSideRs)
   if not moved then return false end
 
   local bufferSlot = findItem(ctx, itemName)
   if not bufferSlot then return false end
 
-  local success = transposer.transferItem(potionChestSide, potionBrewerSide, 1, bufferSlot, itemSlot)
+  local success = transposer.transferItem(potionChestSideT, potionBrewerSide, 1, bufferSlot, itemSlot)
 
   if not success then return false end
 end
