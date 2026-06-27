@@ -1,57 +1,35 @@
-local M = {}
+local ITEMS = {
+  { slot = 7, name = "minecraft:glass_bottle" },
+  { slot = 8, name = "minecraft:nether_wart" },
+  { slot = 9, name = "minecraft:prismarine_crystals" },
+  { slot = 10, name = "minecraft:glowstone_dust" }
+}
 
-local GLASS_BOTTLE_SLOT = 7
-local GLASS_BOTTLE_NAME = "minecraft:glass_bottle"
-
-local NETHER_WART_SLOT = 8
-local NETHER_WART_NAME = "minecraft:nether_wart"
-
-local PRISMARINE_CRYSTALS_SLOT = 9
-local PRISMARINE_CRYSTALS_NAME = "minecraft:prismarine_crystals"
-
-local GLOWSTONE_DUST_SLOT = 10
-local GLOWSTONE_DUST_NAME = "minecraft:glowstone_dust"
-
-local function getStackName(stack)
-  if type(stack) ~= "table" then return nil end
-  return stack.name
-end
-
-local function getInventorySize(transposer, side)
-  local size = transposer.getInventorySize(side)
-  if type(size) ~= "number" then return 0 end
-  return size
-end
-
-local function getStackInSlot(transposer, side, slot)
-  local ok, stack = pcall(transposer.getStackInSlot, side, slot)
+local function getStack(ctx, side, slot)
+  local ok, stack = pcall(ctx.potionTransposer.getStackInSlot, side, slot)
   if not ok then return nil end
   return stack
 end
 
 local function slotNeedsItem(ctx, slot, itemName)
-  local transposer = ctx.potionTransposer
-  if not transposer then return false end
-
-  local brewerSide = ctx.config.POTION_BREWER_SIDE
-  local stack = getStackInSlot(transposer, brewerSide, slot)
+  local stack = getStack(ctx, ctx.config.POTION_BREWER_SIDE, slot)
 
   if not stack then return true end
-  if getStackName(stack) == itemName then return false end
+  if stack.name ~= itemName then return false end
+  if (stack.size or 0) <= 0 then return true end
 
   return false
 end
 
 local function findItemInBuffer(ctx, itemName)
   local transposer = ctx.potionTransposer
-  if not transposer then return nil end
-
   local bufferSide = ctx.config.POTION_CHEST_SIDE_T
-  local size = getInventorySize(transposer, bufferSide)
+  local size = transposer.getInventorySize(bufferSide) or 0
 
   for slot = 1, size do
-    local stack = getStackInSlot(transposer, bufferSide, slot)
-    if getStackName(stack) == itemName then
+    local stack = getStack(ctx, bufferSide, slot)
+
+    if stack and stack.name == itemName and (stack.size or 0) > 0 then
       return slot
     end
   end
@@ -60,50 +38,38 @@ local function findItemInBuffer(ctx, itemName)
 end
 
 local function extractOneToBuffer(ctx, itemName)
-  local rsPotion = ctx.rsPotion
-  if not rsPotion then return false end
-
-  local bufferSideFromRs = ctx.config.POTION_CHEST_SIDE_RS
-  local moved = rsPotion.extractItem({ name = itemName }, 1, bufferSideFromRs) or 0
-
-  return moved > 0
-end
-
-local function ensureItemInBuffer(ctx, itemName)
-  local slot = findItemInBuffer(ctx, itemName)
-  if slot then return slot end
-
-  if not extractOneToBuffer(ctx, itemName) then
-    return nil
-  end
-
-  return findItemInBuffer(ctx, itemName)
-end
-
-local function moveOneToBrewer(ctx, brewerSlot, itemName)
-  local transposer = ctx.potionTransposer
-  if not transposer then return false end
-
-  local bufferSlot = ensureItemInBuffer(ctx, itemName)
-  if not bufferSlot then return false end
-
-  local moved = transposer.transferItem(
-    ctx.config.POTION_CHEST_SIDE_T,
-    ctx.config.POTION_BREWER_SIDE,
+  local moved = ctx.rsPotion.extractItem(
+    { name = itemName },
     1,
-    bufferSlot,
-    brewerSlot
+    ctx.config.POTION_CHEST_SIDE_RS
   ) or 0
 
   return moved > 0
 end
 
-local function refillSlot(ctx, brewerSlot, itemName)
-  if not slotNeedsItem(ctx, brewerSlot, itemName) then
-    return true
+local function moveOneToBrewer(ctx, item)
+  local bufferSlot = findItemInBuffer(ctx, item.name)
+
+  if not bufferSlot then
+    if not extractOneToBuffer(ctx, item.name) then
+      return false
+    end
+
+    bufferSlot = findItemInBuffer(ctx, item.name)
+    if not bufferSlot then
+      return false
+    end
   end
 
-  return moveOneToBrewer(ctx, brewerSlot, itemName)
+  local moved = ctx.potionTransposer.transferItem(
+    ctx.config.POTION_CHEST_SIDE_T,
+    ctx.config.POTION_BREWER_SIDE,
+    1,
+    bufferSlot,
+    item.slot
+  ) or 0
+
+  return moved > 0
 end
 
 function M.refill(ctx)
@@ -111,12 +77,17 @@ function M.refill(ctx)
   if not ctx.potionTransposer then return false end
   if not ctx.rsPotion then return false end
 
-  refillSlot(ctx, GLASS_BOTTLE_SLOT, GLASS_BOTTLE_NAME)
-  refillSlot(ctx, NETHER_WART_SLOT, NETHER_WART_NAME)
-  refillSlot(ctx, PRISMARINE_CRYSTALS_SLOT, PRISMARINE_CRYSTALS_NAME)
-  refillSlot(ctx, GLOWSTONE_DUST_SLOT, GLOWSTONE_DUST_NAME)
+  local movedAny = false
 
-  return true
+  for _, item in ipairs(ITEMS) do
+    if slotNeedsItem(ctx, item.slot, item.name) then
+      local moved = moveOneToBrewer(ctx, item)
+
+      if moved then
+        movedAny = true
+      end
+    end
+  end
+
+  return movedAny
 end
-
-return M
