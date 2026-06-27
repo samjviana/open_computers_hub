@@ -10,7 +10,7 @@ local GLOWSTONE_DUST_SLOT = 10
 local GLOWSTONE_DUST_NAME = "minecraft:glowstone_dust"
 
 local function needItem(ctx, item_slot)
-  local rs_potion = ctx.components.rsPotion
+  local rs_potion = ctx.rsPotion
   if not rs_potion then return false end
 
   local potionChestSide = ctx.config.POTION_CHEST_SIDE
@@ -20,7 +20,7 @@ local function needItem(ctx, item_slot)
 end
 
 local function findItem(ctx, item_name)
-  local rs_potion = ctx.components.rsPotion
+  local rs_potion = ctx.rsPotion
   if not rs_potion then return nil end
 
   local potionChestSide = ctx.config.POTION_CHEST_SIDE
@@ -37,10 +37,10 @@ local function findItem(ctx, item_name)
 end
 
 local function moveItem(ctx, itemSlot, itemName)
-  local transposer = ctx.components.potion_transposer
+  local transposer = ctx.potionTransposer
   if not transposer then return false end
 
-  local rs_potion = ctx.components.rsPotion
+  local rs_potion = ctx.rsPotion
   if not rs_potion then return false end
 
   local potionBrewerSide = ctx.config.POTION_BREWER_SIDE
@@ -58,10 +58,10 @@ local function moveItem(ctx, itemSlot, itemName)
 end
 
 function M.refill(ctx)
-  local transposer = ctx.components.potion_transposer
+  local transposer = ctx.potionTransposer
   if not transposer then return false end
 
-  local rs_potion = ctx.components.rsPotion
+  local rs_potion = ctx.rsPotion
   if not rs_potion then return false end
 
   if needItem(ctx, GLASS_BOTTLE_SLOT) then
@@ -84,7 +84,7 @@ function M.refill(ctx)
     if not moved then return false end
   end
 
-  
+
 end
 
 return M

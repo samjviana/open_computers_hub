@@ -10,7 +10,7 @@ function M.load(config)
     rsMain = component.proxy(config.RS_MAIN),
     rsAux = component.proxy(config.RS_AUX),
     rsPotion = component.proxy(config.RS_POTION),
-    potion_transposer = component.proxy(config.POTION_TRANSPOSER),
+    potionTransposer = component.proxy(config.POTION_TRANSPOSER),
   }
 end
 
