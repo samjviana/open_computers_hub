@@ -1,3 +1,5 @@
+local M = {}
+
 local ITEMS = {
   { slot = 7, name = "minecraft:glass_bottle" },
   { slot = 8, name = "minecraft:nether_wart" },
@@ -91,3 +93,5 @@ function M.refill(ctx)
 
   return movedAny
 end
+
+return M
